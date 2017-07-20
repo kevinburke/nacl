@@ -18,6 +18,8 @@ This package is interoperable with NaCl: https://nacl.cr.yp.to/secretbox.html.
 package secretbox // import "github.com/kevinburke/nacl/secretbox"
 
 import (
+	"errors"
+
 	"github.com/kevinburke/nacl"
 	"github.com/kevinburke/nacl/onetimeauth"
 	"golang.org/x/crypto/salsa20/salsa"
@@ -51,6 +53,15 @@ func sliceForAppend(in []byte, n int) (head, tail []byte) {
 	}
 	tail = head[len(in):]
 	return
+}
+
+// EasySeal encrypts message using key. A 24-byte nonce is generated and
+// prepended to the output. The key and nonce pair must be unique for each
+// distinct message, and the output will be Overhead+24 bytes longer than
+// message.
+func EasySeal(message []byte, key nacl.Key) []byte {
+	nonce := nacl.NewNonce()
+	return Seal(nonce[:], message, nonce, key)
 }
 
 // Seal appends an encrypted and authenticated copy of message to out, which
@@ -96,6 +107,24 @@ func Seal(out, message []byte, nonce nacl.Nonce, key nacl.Key) []byte {
 	copy(tagOut, tag[:])
 
 	return ret
+}
+
+var errInvalidInput = errors.New("secretbox: Could not decrypt invalid input")
+
+// EasyOpen decrypts box using key. We assume a 24-byte nonce is prepended to
+// the encrypted text in box. The key and nonce pair must be unique for each
+// distinct message.
+func EasyOpen(box []byte, key nacl.Key) ([]byte, error) {
+	if len(box) < 24 {
+		return nil, errors.New("secretbox: message too short")
+	}
+	decryptNonce := new([24]byte)
+	copy(decryptNonce[:], box[:24])
+	decrypted, ok := Open([]byte{}, box[24:], decryptNonce, key)
+	if !ok {
+		return nil, errInvalidInput
+	}
+	return decrypted, nil
 }
 
 // Open authenticates and decrypts a box produced by Seal and appends the

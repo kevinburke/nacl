@@ -21,23 +21,19 @@ func Example() {
 		panic(err)
 	}
 
-	// You must use a different nonce for each message you encrypt with the
-	// same key. Since the nonce here is 192 bits long, a random value
-	// provides a sufficiently small probability of repeats.
-	nonce := nacl.NewNonce()
-
-	// This encrypts "hello world" and appends the result to the nonce.
-	encrypted := secretbox.Seal(nonce[:], []byte("hello world"), nonce, key)
+	// This encrypts "hello world" and returns an encrypted message with a
+	// random nonce prepended. You must use a different nonce for each message
+	// you encrypt with the same key. Since the nonce here is 192 bits long, a
+	// random value provides a sufficiently small probability of repeats.
+	encrypted := secretbox.EasySeal([]byte("hello world"), key)
 
 	// When you decrypt, you must use the same nonce and key you used to
 	// encrypt the message. One way to achieve this is to store the nonce
 	// alongside the encrypted message. Above, we stored the nonce in the first
 	// 24 bytes of the encrypted text.
-	var decryptNonce [24]byte
-	copy(decryptNonce[:], encrypted[:24])
-	decrypted, ok := secretbox.Open(nil, encrypted[24:], &decryptNonce, key)
-	if !ok {
-		panic("decryption error")
+	decrypted, err := secretbox.EasyOpen(encrypted, key)
+	if err != nil {
+		panic(err)
 	}
 
 	fmt.Println(string(decrypted))

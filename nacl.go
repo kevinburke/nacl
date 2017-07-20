@@ -25,6 +25,9 @@ import (
 	"github.com/kevinburke/nacl/randombytes"
 )
 
+// The software version.
+const Version = "0.1"
+
 // Key represents a private or public key for use in encryption or
 // authentication. A key should be random bytes and *not* 32 characters in the
 // visible ASCII set.
