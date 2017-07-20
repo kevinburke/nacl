@@ -18,15 +18,16 @@ This package is interoperable with NaCl: https://nacl.cr.yp.to/secretbox.html.
 package secretbox // import "github.com/kevinburke/nacl/secretbox"
 
 import (
-	"golang.org/x/crypto/poly1305"
+	"github.com/kevinburke/nacl"
+	"github.com/kevinburke/nacl/onetimeauth"
 	"golang.org/x/crypto/salsa20/salsa"
 )
 
 // Overhead is the number of bytes of overhead when boxing a message.
-const Overhead = poly1305.TagSize
+const Overhead = onetimeauth.Size
 
 // setup produces a sub-key and Salsa20 counter given a nonce and key.
-func setup(subKey *[32]byte, counter *[16]byte, nonce *[24]byte, key *[32]byte) {
+func setup(subKey nacl.Key, counter *[16]byte, nonce nacl.Nonce, key nacl.Key) {
 	// We use XSalsa20 for encryption so first we need to generate a
 	// key and nonce with HSalsa20.
 	var hNonce [16]byte
@@ -55,7 +56,7 @@ func sliceForAppend(in []byte, n int) (head, tail []byte) {
 // Seal appends an encrypted and authenticated copy of message to out, which
 // must not overlap message. The key and nonce pair must be unique for each
 // distinct message and the output will be Overhead bytes longer than message.
-func Seal(out, message []byte, nonce *[24]byte, key *[32]byte) []byte {
+func Seal(out, message []byte, nonce nacl.Nonce, key nacl.Key) []byte {
 	var subKey [32]byte
 	var counter [16]byte
 	setup(&subKey, &counter, nonce, key)
@@ -69,7 +70,7 @@ func Seal(out, message []byte, nonce *[24]byte, key *[32]byte) []byte {
 	var poly1305Key [32]byte
 	copy(poly1305Key[:], firstBlock[:])
 
-	ret, out := sliceForAppend(out, len(message)+poly1305.TagSize)
+	ret, out := sliceForAppend(out, len(message)+onetimeauth.Size)
 
 	// We XOR up to 32 bytes of message with the keystream generated from
 	// the first block.
@@ -79,7 +80,7 @@ func Seal(out, message []byte, nonce *[24]byte, key *[32]byte) []byte {
 	}
 
 	tagOut := out
-	out = out[poly1305.TagSize:]
+	out = out[onetimeauth.Size:]
 	for i, x := range firstMessageBlock {
 		out[i] = firstBlock[32+i] ^ x
 	}
@@ -91,8 +92,7 @@ func Seal(out, message []byte, nonce *[24]byte, key *[32]byte) []byte {
 	counter[8] = 1
 	salsa.XORKeyStream(out, message, &counter, &subKey)
 
-	var tag [poly1305.TagSize]byte
-	poly1305.Sum(&tag, ciphertext, &poly1305Key)
+	tag := onetimeauth.Sum(ciphertext, &poly1305Key)
 	copy(tagOut, tag[:])
 
 	return ret
@@ -101,7 +101,7 @@ func Seal(out, message []byte, nonce *[24]byte, key *[32]byte) []byte {
 // Open authenticates and decrypts a box produced by Seal and appends the
 // message to out, which must not overlap box. The output will be Overhead
 // bytes smaller than box.
-func Open(out []byte, box []byte, nonce *[24]byte, key *[32]byte) ([]byte, bool) {
+func Open(out []byte, box []byte, nonce nacl.Nonce, key nacl.Key) ([]byte, bool) {
 	if len(box) < Overhead {
 		return nil, false
 	}
@@ -118,10 +118,10 @@ func Open(out []byte, box []byte, nonce *[24]byte, key *[32]byte) ([]byte, bool)
 
 	var poly1305Key [32]byte
 	copy(poly1305Key[:], firstBlock[:])
-	var tag [poly1305.TagSize]byte
+	var tag [onetimeauth.Size]byte
 	copy(tag[:], box)
 
-	if !poly1305.Verify(&tag, box[poly1305.TagSize:], &poly1305Key) {
+	if !onetimeauth.Verify(&tag, box[onetimeauth.Size:], &poly1305Key) {
 		return nil, false
 	}
 

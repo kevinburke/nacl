@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"golang.org/x/crypto/nacl/box"
+	"github.com/kevinburke/nacl"
+	"github.com/kevinburke/nacl/box"
 )
 
 func Example() {
@@ -59,25 +60,20 @@ func Example_precompute() {
 
 	// The shared key can be used to speed up processing when using the same
 	// pair of keys repeatedly.
-	sharedEncryptKey := new([32]byte)
-	box.Precompute(sharedEncryptKey, recipientPublicKey, senderPrivateKey)
+	sharedEncryptKey := box.Precompute(recipientPublicKey, senderPrivateKey)
 
 	// You must use a different nonce for each message you encrypt with the
 	// same key. Since the nonce here is 192 bits long, a random value
 	// provides a sufficiently small probability of repeats.
-	var nonce [24]byte
-	if _, err := io.ReadFull(crypto_rand.Reader, nonce[:]); err != nil {
-		panic(err)
-	}
+	nonce := nacl.NewNonce()
 
 	msg := []byte("A fellow of infinite jest, of most excellent fancy")
 	// This encrypts msg and appends the result to the nonce.
-	encrypted := box.SealAfterPrecomputation(nonce[:], msg, &nonce, sharedEncryptKey)
+	encrypted := box.SealAfterPrecomputation(nonce[:], msg, nonce, sharedEncryptKey)
 
 	// The shared key can be used to speed up processing when using the same
 	// pair of keys repeatedly.
-	var sharedDecryptKey [32]byte
-	box.Precompute(&sharedDecryptKey, senderPublicKey, recipientPrivateKey)
+	sharedDecryptKey := box.Precompute(senderPublicKey, recipientPrivateKey)
 
 	// The recipient can decrypt the message using the shared key. When you
 	// decrypt, you must use the same nonce you used to encrypt the message.
@@ -86,7 +82,7 @@ func Example_precompute() {
 	// encrypted text.
 	var decryptNonce [24]byte
 	copy(decryptNonce[:], encrypted[:24])
-	decrypted, ok := box.OpenAfterPrecomputation(nil, encrypted[24:], &decryptNonce, &sharedDecryptKey)
+	decrypted, ok := box.OpenAfterPrecomputation(nil, encrypted[24:], &decryptNonce, sharedDecryptKey)
 	if !ok {
 		panic("decryption error")
 	}

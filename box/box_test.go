@@ -10,7 +10,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"golang.org/x/crypto/curve25519"
+	"github.com/kevinburke/nacl/scalarmult"
 )
 
 func TestSealOpen(t *testing.T) {
@@ -55,8 +55,7 @@ func TestBox(t *testing.T) {
 		privateKey2[i] = 2
 	}
 
-	var publicKey1 [32]byte
-	curve25519.ScalarBaseMult(&publicKey1, &privateKey1)
+	publicKey1 := scalarmult.Base(&privateKey1)
 	var message [64]byte
 	for i := range message[:] {
 		message[i] = 3
@@ -67,7 +66,7 @@ func TestBox(t *testing.T) {
 		nonce[i] = 4
 	}
 
-	box := Seal(nil, message[:], &nonce, &publicKey1, &privateKey2)
+	box := Seal(nil, message[:], &nonce, publicKey1, &privateKey2)
 
 	// expected was generated using the C implementation of NaCl.
 	expected, _ := hex.DecodeString("78ea30b19d2341ebbdba54180f821eec265cf86312549bea8a37652a8bb94f07b78a73ed1708085e6ddd0e943bbdeb8755079a37eb31d86163ce241164a47629c0539f330b4914cd135b3855bc2a2dfc")

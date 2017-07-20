@@ -6,27 +6,26 @@ package secretbox
 
 import (
 	"bytes"
-	"crypto/rand"
 	"encoding/hex"
 	"testing"
+
+	"github.com/kevinburke/nacl"
+	"github.com/kevinburke/nacl/randombytes"
 )
 
 func TestSealOpen(t *testing.T) {
-	var key [32]byte
-	var nonce [24]byte
-
-	rand.Reader.Read(key[:])
-	rand.Reader.Read(nonce[:])
+	key := nacl.NewKey()
+	nonce := nacl.NewNonce()
 
 	var box, opened []byte
 
 	for msgLen := 0; msgLen < 128; msgLen += 17 {
 		message := make([]byte, msgLen)
-		rand.Reader.Read(message)
+		randombytes.Read(message)
 
-		box = Seal(box[:0], message, &nonce, &key)
+		box = Seal(box[:0], message, nonce, key)
 		var ok bool
-		opened, ok = Open(opened[:0], box, &nonce, &key)
+		opened, ok = Open(opened[:0], box, nonce, key)
 		if !ok {
 			t.Errorf("%d: failed to open box", msgLen)
 			continue
@@ -40,7 +39,7 @@ func TestSealOpen(t *testing.T) {
 
 	for i := range box {
 		box[i] ^= 0x20
-		_, ok := Open(opened[:0], box, &nonce, &key)
+		_, ok := Open(opened[:0], box, nonce, key)
 		if ok {
 			t.Errorf("box was opened after corrupting byte %d", i)
 		}
