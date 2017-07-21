@@ -2,14 +2,15 @@ go_import_path: github.com/kevinburke/nacl
 
 language: go
 
-go:
-  - 1.7
-  - 1.8
-  - tip
+os: linux
+dist: trusty
+
+sudo: required
 
 before_script:
-  - go get -t ./...
+     - wget "https://storage.googleapis.com/bazel-apt/pool/jdk1.8/b/bazel/bazel_0.5.2_amd64.deb"
+     - sudo dpkg --force-all -i bazel_0.5.2_amd64.deb
 
 script:
-    - make race-test
-    - make bench
+  - bazel build //...
+  - bazel test //...

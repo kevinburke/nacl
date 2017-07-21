@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["scalarmult.go"],
+    visibility = ["//visibility:public"],
+    deps = ["@org_golang_x_crypto//curve25519:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["scalarmult_test.go"],
+    timeout = "short",
+    library = ":go_default_library",
+)
