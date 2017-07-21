@@ -17,18 +17,22 @@ other languages, and available in Go.
 
 Among other benefits, NaCL is designed to be misuse resistant and standardizes
 on the use of 32 byte keys and 24 byte nonces everywhere. Several helpers are
-present for generating keys/nonces and loading them from configuration. You can
-generate a key by running `openssl rand -hex 32` and use the helpers in your
-program like so:
+present for generating keys/nonces and loading them from configuration, as well
+as for encrypting messages. You can generate a key by running `openssl rand -hex
+32` and use the helpers in your program like so:
 
 ```go
-key, err := nacl.Load("6368616e676520746869732070617373776f726420746f206120736563726574")
-if err != nil {
-    panic(err)
+import "github.com/kevinburke/nacl"
+import "github.com/kevinburke/nacl/secretbox"
+
+func main() {
+    key, err := nacl.Load("6368616e676520746869732070617373776f726420746f206120736563726574")
+    if err != nil {
+        panic(err)
+    }
+    encrypted := secretbox.EasySeal([]byte("hello world"), key)
+    fmt.Println(base64.StdEncoding.EncodeToString(encrypted))
 }
-nonce := nacl.NewNonce()
-encrypted := secretbox.Seal(nonce[:], []byte("hello world"), nonce, key)
-fmt.Println(base64.StdEncoding.EncodeToString(encrypted))
 ```
 
 The package names match the primitives available in NaCL, with the `crypto_`
