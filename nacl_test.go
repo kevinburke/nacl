@@ -13,3 +13,29 @@ func TestHash(t *testing.T) {
 		t.Errorf("Hash(%q): got %q, want %q", in, got, want)
 	}
 }
+
+func TestSecretKey(t *testing.T) {
+	t.Parallel()
+	key, err := Load("")
+	if err == nil {
+		t.Errorf("expected non-nil error, got nil")
+	}
+
+	if _, err := Load("wrong length"); err.Error() != "nacl: incorrect hex key length: 12, should be 64" {
+		t.Errorf("expected wrong-length error, got %q", err)
+	}
+
+	_, err = Load("zzzzzz6e676520746869732070617373776f726420746f206120736563726574")
+	if err == nil || err.Error() != "encoding/hex: invalid byte: U+007A 'z'" {
+		t.Errorf("expected invalid hex error, got %v", err)
+	}
+
+	key, err = Load("6368616e676520746869732070617373776f726420746f206120736563726574")
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := hex.EncodeToString(key[:])
+	if h != "6368616e676520746869732070617373776f726420746f206120736563726574" {
+		t.Errorf("could not roundtrip decoded key: %s", h)
+	}
+}

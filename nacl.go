@@ -46,12 +46,15 @@ type Nonce *[24]byte
 // representation in a configuration file. You can generate one by running
 // "openssl rand -hex 32".
 func Load(hexkey string) (Key, error) {
+	if len(hexkey) != 64 {
+		return nil, fmt.Errorf("nacl: incorrect hex key length: %d, should be 64", len(hexkey))
+	}
 	keyBytes, err := hex.DecodeString(hexkey)
 	if err != nil {
 		return nil, err
 	}
 	if len(keyBytes) != 32 {
-		return nil, fmt.Errorf("incorrect key length: %d", len(keyBytes))
+		return nil, fmt.Errorf("nacl: incorrect key length: %d", len(keyBytes))
 	}
 	key := new([32]byte)
 	copy(key[:], keyBytes)
