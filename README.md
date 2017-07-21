@@ -47,6 +47,21 @@ go get github.com/kevinburke/nacl
 
 Or you can Git clone the code directly to $GOPATH/src/github.com/kevinburke/nacl.
 
+### Who am I?
+
+While you probably shouldn't trust random security code from the Internet,
+I'm reasonably confident that this code is secure. I did not implement any
+of the hard math (poly1305, XSalsa20, curve25519) myself - I call into
+golang.org/x/crypto for all of those functions. I also ported over every test
+I could find from the C/C++ code, and associated RFC's, and ensured that these
+libraries passed those tests.
+
+I'm [a contributor to the Go Standard Library and associated
+tools][contributor], and I've also been paid to do security consulting for
+startups, and found security problems in consumer sites.
+
+[contributor]: https://go-review.googlesource.com/q/owner:kev%2540inburke.com
+
 ### Errata
 
 - The implementation of `crypto_sign` uses the `ref10` implementation of ed25519
