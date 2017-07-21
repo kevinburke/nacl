@@ -59,10 +59,13 @@ I could find from the C/C++ code, and associated RFC's, and ensured that these
 libraries passed those tests.
 
 I'm [a contributor to the Go Standard Library and associated
-tools][contributor], and I've also been paid to do security consulting for
-startups, and found security problems in consumer sites.
+tools][contributor], and I've also been paid to do [security
+consulting][services] for startups, and [found security problems in consumer
+sites][capital-one].
 
 [contributor]: https://go-review.googlesource.com/q/owner:kev%2540inburke.com
+[capital-one]: https://burke.services/capital-one-open-redirect.html
+[services]: https://burke.services
 
 ### Errata
 
