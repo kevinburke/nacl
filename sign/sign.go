@@ -12,14 +12,11 @@ package sign
 
 import (
 	"crypto"
-	cryptorand "crypto/rand"
-	"crypto/sha512"
 	"errors"
 	"io"
 	"strconv"
 
-	"github.com/kevinburke/nacl"
-	"github.com/kevinburke/nacl/sign/internal/edwards25519"
+	"golang.org/x/crypto/ed25519"
 )
 
 const (
@@ -32,16 +29,15 @@ const (
 )
 
 // PublicKey is the type of Ed25519 public keys.
-type PublicKey []byte
+type PublicKey ed25519.PublicKey
 
 // PrivateKey is the type of Ed25519 private keys. It implements crypto.Signer.
-type PrivateKey []byte
+type PrivateKey ed25519.PrivateKey
 
 // Public returns the PublicKey corresponding to priv.
 func (priv PrivateKey) Public() crypto.PublicKey {
-	publicKey := make([]byte, PublicKeySize)
-	copy(publicKey, priv[32:])
-	return PublicKey(publicKey)
+	pub := ed25519.PrivateKey(priv).Public().(ed25519.PublicKey)
+	return PublicKey(pub)
 }
 
 // Sign signs the given message with priv.
@@ -61,83 +57,21 @@ func (priv PrivateKey) Sign(rand io.Reader, message []byte, opts crypto.SignerOp
 // Keypair generates a public/private key pair using entropy from rand.
 // If rand is nil, crypto/rand.Reader will be used.
 func Keypair(rand io.Reader) (publicKey PublicKey, privateKey PrivateKey, err error) {
-	if rand == nil {
-		rand = cryptorand.Reader
-	}
-
-	privateKey = make([]byte, PrivateKeySize)
-	publicKey = make([]byte, PublicKeySize)
-	_, err = io.ReadFull(rand, privateKey[:32])
+	public, private, err := ed25519.GenerateKey(rand)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	digest := nacl.Hash(privateKey[:32])
-	digest[0] &= 248
-	digest[31] &= 127
-	digest[31] |= 64
-
-	var A edwards25519.ExtendedGroupElement
-	var hBytes [32]byte
-	copy(hBytes[:], digest[:])
-	edwards25519.GeScalarMultBase(&A, &hBytes)
-	var publicKeyBytes [32]byte
-	A.ToBytes(&publicKeyBytes)
-
-	copy(privateKey[32:], publicKeyBytes[:])
-	copy(publicKey, publicKeyBytes[:])
-
-	return publicKey, privateKey, nil
+	return PublicKey(public), PrivateKey(private), nil
 }
 
 // Sign signs the message with privateKey. The first SignatureSize bytes of the
 // response will be the signature; the rest will be the message. It will panic
 // if len(privateKey) is not PrivateKeySize.
 func Sign(message []byte, privateKey PrivateKey) []byte {
-	if l := len(privateKey); l != PrivateKeySize {
-		panic("sign: bad private key length: " + strconv.Itoa(l))
-	}
-
-	h := sha512.New()
-	h.Write(privateKey[:32])
-
-	var digest1, messageDigest, hramDigest [64]byte
-	var expandedSecretKey [32]byte
-	h.Sum(digest1[:0])
-	copy(expandedSecretKey[:], digest1[:])
-	expandedSecretKey[0] &= 248
-	expandedSecretKey[31] &= 63
-	expandedSecretKey[31] |= 64
-
-	h.Reset()
-	h.Write(digest1[32:])
-	h.Write(message)
-	h.Sum(messageDigest[:0])
-
-	var messageDigestReduced [32]byte
-	edwards25519.ScReduce(&messageDigestReduced, &messageDigest)
-	var R edwards25519.ExtendedGroupElement
-	edwards25519.GeScalarMultBase(&R, &messageDigestReduced)
-
-	var encodedR [32]byte
-	R.ToBytes(&encodedR)
-
-	h.Reset()
-	h.Write(encodedR[:])
-	h.Write(privateKey[32:])
-	h.Write(message)
-	h.Sum(hramDigest[:0])
-	var hramDigestReduced [32]byte
-	edwards25519.ScReduce(&hramDigestReduced, &hramDigest)
-
-	var s [32]byte
-	edwards25519.ScMulAdd(&s, &hramDigestReduced, &expandedSecretKey, &messageDigestReduced)
-
+	sig := ed25519.Sign(ed25519.PrivateKey(privateKey), message)
 	response := make([]byte, SignatureSize+len(message))
-	copy(response[:], encodedR[:])
-	copy(response[32:], s[:])
+	copy(response[:SignatureSize], sig)
 	copy(response[SignatureSize:], message)
-
 	return response
 }
 
@@ -161,31 +95,5 @@ func Verify(sig []byte, publicKey PublicKey) bool {
 	msg := sig[SignatureSize:]
 	sig = sig[:SignatureSize]
 
-	var A edwards25519.ExtendedGroupElement
-	var publicKeyBytes [32]byte
-	copy(publicKeyBytes[:], publicKey)
-	if !A.FromBytes(&publicKeyBytes) {
-		return false
-	}
-	edwards25519.FeNeg(&A.X, &A.X)
-	edwards25519.FeNeg(&A.T, &A.T)
-
-	h := sha512.New()
-	h.Write(sig[:32])
-	h.Write(publicKey[:])
-	h.Write(msg)
-	var digest [64]byte
-	h.Sum(digest[:0])
-
-	var hReduced [32]byte
-	edwards25519.ScReduce(&hReduced, &digest)
-
-	var R edwards25519.ProjectiveGroupElement
-	var b [32]byte
-	copy(b[:], sig[32:])
-	edwards25519.GeDoubleScalarMultVartime(&R, &hReduced, &A, &b)
-
-	var checkR [32]byte
-	R.ToBytes(&checkR)
-	return nacl.Verify(sig[:32], checkR[:])
+	return ed25519.Verify(ed25519.PublicKey(publicKey), msg, sig)
 }
