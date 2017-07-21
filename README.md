@@ -7,9 +7,11 @@ NaCL, better compatibility with NaCL implementations written in other languages,
 as well as some utilities for generating and loading keys and nonces, and
 encrypting messages.
 
-Many of them are simple wrappers around functions or libraries available in
-the Go standard library, or in the golang.org/x/crypto package. There are no
-dependencies outside of the standard library or golang.org/x/crypto.
+Many of them are simple wrappers around functions or libraries available in the
+Go standard library, or in the golang.org/x/crypto package. Other code I copied
+directly into this library with the appropriate LICENSE; if a function is longer
+than, say, 5 lines, I didn't write it myself. There are no dependencies outside
+of the standard library or golang.org/x/crypto.
 
 The goal is to both show how to implement the NaCL functions in pure Go, and
 to provide interoperability between messages encrypted/hashed/authenticated in
