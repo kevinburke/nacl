@@ -16,7 +16,7 @@ func TestHash(t *testing.T) {
 
 func TestSecretKey(t *testing.T) {
 	t.Parallel()
-	key, err := Load("")
+	_, err := Load("")
 	if err == nil {
 		t.Errorf("expected non-nil error, got nil")
 	}
@@ -30,7 +30,7 @@ func TestSecretKey(t *testing.T) {
 		t.Errorf("expected invalid hex error, got %v", err)
 	}
 
-	key, err = Load("6368616e676520746869732070617373776f726420746f206120736563726574")
+	key, err := Load("6368616e676520746869732070617373776f726420746f206120736563726574")
 	if err != nil {
 		t.Fatal(err)
 	}
