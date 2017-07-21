@@ -99,7 +99,7 @@ func TestSum(t *testing.T) {
 	for _, tt := range testCases {
 		a := Sum(tt.msg, &tt.key)
 		if !cmp.Equal(*a, tt.out) {
-			t.Errorf("#%d: Sum: got\n%x\nwant\n%x", tt.num, a, tt.out)
+			t.Errorf("#%d: Sum: got\n%x\nwant\n%x", tt.num, *a, tt.out)
 		}
 	}
 }

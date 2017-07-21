@@ -7,7 +7,7 @@ MEGACHECK := $(shell command -v megacheck)
 
 test: vet
 	@# this target should always be listed first so "make" runs the tests.
-	go list ./... | grep -v vendor | xargs go test -short
+	bazel test //...
 
 race-test: vet
 	go list ./... | grep -v vendor | xargs go test -race
