@@ -1,6 +1,8 @@
 SHELL = /bin/bash
 
 BENCHSTAT := $(shell command -v benchstat)
+BUMP_VERSION := $(shell command -v bump_version)
+GODOCDOC := $(shell command -v godocdoc)
 MEGACHECK := $(shell command -v megacheck)
 
 test: vet
@@ -28,3 +30,9 @@ ifndef BENCHSTAT
 	go get rsc.io/benchstat
 endif
 	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && benchstat "$$tmp"
+
+release: race-test
+ifndef BUMP_VERSION
+	go get github.com/Shyp/bump_version
+endif
+	bump_version minor nacl.go
