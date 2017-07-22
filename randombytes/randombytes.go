@@ -11,7 +11,7 @@ func Read(in []byte) (int, error) {
 	return rand.Read(in)
 }
 
-// MustRead fills in with random data or panics.
+// MustRead fills in entirely with random data, or panics.
 func MustRead(in []byte) {
 	n, err := Read(in)
 	if err != nil {

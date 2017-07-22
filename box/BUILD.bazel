@@ -14,16 +14,16 @@ go_library(
 
 go_test(
     name = "go_default_test",
-    srcs = ["box_test.go"],
     timeout = "short",
+    srcs = ["box_test.go"],
     library = ":go_default_library",
     deps = ["//scalarmult:go_default_library"],
 )
 
 go_test(
     name = "go_default_xtest",
-    srcs = ["example_test.go"],
     timeout = "short",
+    srcs = ["example_test.go"],
     deps = [
         ":go_default_library",
         "//:go_default_library",

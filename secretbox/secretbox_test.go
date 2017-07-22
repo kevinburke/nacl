@@ -13,6 +13,39 @@ import (
 	"github.com/kevinburke/nacl/randombytes"
 )
 
+func TestEasySealOpen(t *testing.T) {
+	key := nacl.NewKey()
+
+	var box, opened []byte
+
+	for msgLen := 0; msgLen < 128; msgLen += 17 {
+		message := make([]byte, msgLen)
+		randombytes.Read(message)
+
+		box = EasySeal(message, key)
+		var err error
+		opened, err = EasyOpen(box, key)
+		if err != nil {
+			t.Errorf("%d: failed to open box: %v", msgLen, err)
+			continue
+		}
+
+		if !bytes.Equal(opened, message) {
+			t.Errorf("%d: got %x, expected %x", msgLen, opened, message)
+			continue
+		}
+	}
+
+	for i := range box {
+		box[i] ^= 0x20
+		_, err := EasyOpen(box, key)
+		if err == nil {
+			t.Errorf("box was opened after corrupting byte %d", i)
+		}
+		box[i] ^= 0x20
+	}
+}
+
 func TestSealOpen(t *testing.T) {
 	key := nacl.NewKey()
 	nonce := nacl.NewNonce()

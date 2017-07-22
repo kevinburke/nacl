@@ -9,17 +9,17 @@ go_library(
 
 go_test(
     name = "go_default_test",
+    timeout = "short",
     srcs = ["sign_test.go"],
     data = glob(["testdata/**"]),
-    timeout = "short",
     library = ":go_default_library",
     deps = ["//sign/internal/edwards25519:go_default_library"],
 )
 
 go_test(
     name = "go_default_xtest",
+    timeout = "short",
     srcs = ["example_test.go"],
     data = glob(["testdata/**"]),
-    timeout = "short",
     deps = [":go_default_library"],
 )

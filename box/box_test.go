@@ -13,6 +13,36 @@ import (
 	"github.com/kevinburke/nacl/scalarmult"
 )
 
+func TestEasySealOpen(t *testing.T) {
+	publicKey1, privateKey1, _ := GenerateKey(rand.Reader)
+	publicKey2, privateKey2, _ := GenerateKey(rand.Reader)
+
+	if *privateKey1 == *privateKey2 {
+		t.Fatalf("private keys are equal!")
+	}
+	if *publicKey1 == *publicKey2 {
+		t.Fatalf("public keys are equal!")
+	}
+	message := []byte("test message")
+
+	box := EasySeal(message, publicKey1, privateKey2)
+	opened, err := EasyOpen(box, publicKey2, privateKey1)
+	if err != nil {
+		t.Fatalf("failed to open box: %v", err)
+	}
+	if !bytes.Equal(opened, message) {
+		t.Fatalf("got %x, want %x", opened, message)
+	}
+	for i := range box {
+		box[i] ^= 0x40
+		_, err := EasyOpen(box, publicKey2, privateKey1)
+		if err == nil {
+			t.Fatalf("opened box with byte %d corrupted", i)
+		}
+		box[i] ^= 0x40
+	}
+}
+
 func TestSealOpen(t *testing.T) {
 	publicKey1, privateKey1, _ := GenerateKey(rand.Reader)
 	publicKey2, privateKey2, _ := GenerateKey(rand.Reader)
