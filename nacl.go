@@ -26,7 +26,7 @@ import (
 )
 
 // The software version.
-const Version = "0.1"
+const Version = "0.2"
 
 // Key represents a private or public key for use in encryption or
 // authentication. A key should be random bytes and *not* simply 32 characters
