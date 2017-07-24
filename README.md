@@ -81,6 +81,7 @@ the API and matches the behavior of the ref10 implementation and other NaCL
 implementations. Sign also flips the order of the message and the private key:
 `Sign(message, privatekey)`, to match the NaCL implementation.
 
+
 - Compared with `golang.org/x/crypto/nacl/box`, `Precompute` returns the shared
 key instead of modifying the input. In several places the code was modified to
 call functions that now exist in `nacl`.
