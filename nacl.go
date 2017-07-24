@@ -77,12 +77,16 @@ func NewNonce() Nonce {
 	return nonce
 }
 
-// Verify returns true if and only if a and b have equal contents.
+// Verify returns true if and only if a and b have equal contents. The time
+// taken is a function of the length of the slices and is independent of the
+// contents. If an attacker controls the length of a, they may be able to
+// determine the length of b (and vice versa).
 func Verify(a, b []byte) bool {
 	return subtle.ConstantTimeCompare(a, b) == 1
 }
 
-// Verify16 returns true if and only if a and b have equal contents.
+// Verify16 returns true if and only if a and b have equal contents, without
+// leaking timing information.
 func Verify16(a, b *[16]byte) bool {
 	if a == nil || b == nil {
 		panic("nacl: nil input")
@@ -90,7 +94,8 @@ func Verify16(a, b *[16]byte) bool {
 	return subtle.ConstantTimeCompare(a[:], b[:]) == 1
 }
 
-// Verify32 returns true if and only if a and b have equal contents.
+// Verify32 returns true if and only if a and b have equal contents, without
+// leaking timing information.
 func Verify32(a, b *[32]byte) bool {
 	if a == nil || b == nil {
 		panic("nacl: nil input")

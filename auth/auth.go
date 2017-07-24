@@ -45,7 +45,8 @@ func Sum(m []byte, key nacl.Key) *[Size]byte {
 }
 
 // Verify checks that digest is a correct authenticator of a message m under the
-// secret key key. If not, the function returns false.
+// secret key key. If not, the function returns false. Verify does not leak
+// timing information.
 func Verify(digest *[Size]byte, m []byte, key nacl.Key) bool {
 	mac := hmac.New(sha512.New, (*key)[:])
 	mac.Write(m)

@@ -26,12 +26,18 @@ import (
 // Size is the size, in bytes, of the result of a call to Sum.
 const Size = poly1305.TagSize
 
+// Sum generates an authenticator for m using a one-time key and puts the result
+// (of length Size) into out.
+// Authenticating two different messages with the same key allows an attacker to
+// forge messages at will.
 func Sum(m []byte, key nacl.Key) *[Size]byte {
 	out := new([Size]byte)
 	poly1305.Sum(out, m, key)
 	return out
 }
 
+// Verify returns true if mac is a valid authenticator for m with the given
+// key, without leaking timing information.
 func Verify(mac *[Size]byte, m []byte, key nacl.Key) bool {
 	return poly1305.Verify(mac, m, key)
 }
