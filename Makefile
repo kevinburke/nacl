@@ -7,17 +7,23 @@ MEGACHECK := $(shell command -v megacheck)
 
 test: vet
 	@# this target should always be listed first so "make" runs the tests.
-	bazel test //...
+	bazel test --test_output=errors //...
 
-race-test: vet
-	go list ./... | grep -v vendor | xargs go test -race
-
-vet:
+megacheck:
 ifndef MEGACHECK
 	go get -u honnef.co/go/tools/cmd/megacheck
 endif
-	go list ./... | grep -v vendor | xargs go vet
 	go list ./... | grep -v vendor | xargs megacheck --ignore='github.com/kevinburke/nacl/*/*.go:S1002'
+
+race-test: megacheck vet
+	bazel test --test_output=errors --features=race //...
+
+ci:
+	bazel test --noshow_progress --noshow_loading_progress --test_output=errors \
+		--features=race //...
+
+vet:
+	go list ./... | grep -v vendor | xargs go vet
 
 docs:
 ifndef GODOCDOC
@@ -31,7 +37,7 @@ ifndef BENCHSTAT
 endif
 	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && benchstat "$$tmp"
 
-release: race-test
+release: megacheck race-test
 ifndef BUMP_VERSION
 	go get github.com/Shyp/bump_version
 endif
