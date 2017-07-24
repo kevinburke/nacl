@@ -4,7 +4,10 @@ go_library(
     name = "go_default_library",
     srcs = ["nacl.go"],
     visibility = ["//visibility:public"],
-    deps = ["//randombytes:go_default_library"],
+    deps = [
+        "//randombytes:go_default_library",
+        "@org_golang_x_crypto//salsa20/salsa:go_default_library",
+    ],
 )
 
 go_prefix("github.com/kevinburke/nacl")

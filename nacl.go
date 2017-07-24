@@ -23,6 +23,7 @@ import (
 	"fmt"
 
 	"github.com/kevinburke/nacl/randombytes"
+	"golang.org/x/crypto/salsa20/salsa"
 )
 
 // The software version.
@@ -120,4 +121,19 @@ const HashSize = sha512.Size
 func Hash(m []byte) *[HashSize]byte {
 	out := sha512.Sum512(m)
 	return &out
+}
+
+// Setup produces a sub-key and Salsa20 counter given a nonce and key.
+func Setup(nonce Nonce, key Key) (Key, *[16]byte) {
+	// We use XSalsa20 for encryption so first we need to generate a
+	// key and nonce with HSalsa20.
+	var hNonce [16]byte
+	copy(hNonce[:], nonce[:])
+	var subKey [32]byte
+	salsa.HSalsa20(&subKey, &hNonce, key, &salsa.Sigma)
+
+	// The final 8 bytes of the original nonce form the new nonce.
+	var counter [16]byte
+	copy(counter[:], nonce[16:])
+	return &subKey, &counter
 }
