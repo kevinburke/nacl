@@ -1,5 +1,7 @@
 # go-nacl
 
+[![GoDoc](https://godoc.org/github.com/kevinburke/nacl?status.svg)](https://godoc.org/github.com/kevinburke/nacl)
+
 This is a pure Go implementation of the API's available in NaCL:
 https://nacl.cr.yp.to. Compared with the implementation in
 golang.org/x/crypto/nacl, this library offers *all* of the API's present in
