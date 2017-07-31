@@ -8,13 +8,17 @@ load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_repositories", "go_repos
 go_repository(
     name = "org_golang_x_crypto",
     importpath = "golang.org/x/crypto",
-    commit = "6914964337150723782436d56b3f21610a74ce7b",
+    urls = ["https://codeload.github.com/golang/crypto/zip/6914964337150723782436d56b3f21610a74ce7b"],
+    strip_prefix = "crypto-6914964337150723782436d56b3f21610a74ce7b",
+    type = "zip",
 )
 
 go_repository(
     name = "com_github_google_go_cmp",
     importpath = "github.com/google/go-cmp",
-    commit = "18107e6c56edb2d51f965f7d68e59404f0daee54",
+    urls = ["https://codeload.github.com/google/go-cmp/zip/18107e6c56edb2d51f965f7d68e59404f0daee54"],
+    strip_prefix = "go-cmp-18107e6c56edb2d51f965f7d68e59404f0daee54",
+    type = "zip",
 )
 
 go_repositories()

@@ -19,8 +19,13 @@ race-test: megacheck vet
 	bazel test --test_output=errors --features=race //...
 
 ci:
-	bazel test --noshow_progress --noshow_loading_progress --test_output=errors \
-		--features=race //...
+	bazel --batch --host_jvm_args=-Dbazel.DigestFunction=SHA1 test \
+		--experimental_repository_cache="$$HOME/.bzrepos" \
+		--spawn_strategy=remote \
+		--remote_rest_cache=https://remote.rest.stackmachine.com/cache \
+		--test_output=errors \
+		--strategy=Javac=remote \
+		--features=race //... 2>&1 | ts '[%Y-%m-%d %H:%M:%.S]'
 
 vet:
 	go list ./... | grep -v vendor | xargs go vet
