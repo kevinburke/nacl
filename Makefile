@@ -13,7 +13,7 @@ $(MEGACHECK):
 	go get honnef.co/go/tools/cmd/megacheck
 
 check: $(MEGACHECK)
-	go list ./... | grep -v vendor | xargs megacheck --ignore='github.com/kevinburke/nacl/*/*.go:S1002'
+	go list ./... | grep -v vendor | xargs $(MEGACHECK) --ignore='github.com/kevinburke/nacl/*/*.go:S1002'
 
 race-test: check vet
 	bazel test --test_output=errors --features=race //...
