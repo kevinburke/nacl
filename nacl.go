@@ -29,10 +29,16 @@ import (
 // The software version.
 const Version = "0.3"
 
+// Size of a public or private key in bytes.
+const KeySize = 32
+
+// Size of a nonce in bytes.
+const NonceSize = 24
+
 // Key represents a private or public key for use in encryption or
 // authentication. A key should be random bytes and *not* simply 32 characters
 // in the visible ASCII set.
-type Key *[32]byte
+type Key *[KeySize]byte
 
 // Nonce is an arbitrary value that should be used only once per (sender,
 // receiver) pair. For example, the lexicographically smaller public key can
@@ -41,7 +47,7 @@ type Key *[32]byte
 // larger public key uses nonce 2 for its first message to the other key, nonce
 // 4 for its second message, nonce 6 for its third message, etc. Nonces are long
 // enough that randomly generated nonces have negligible risk of collision.
-type Nonce *[24]byte
+type Nonce *[NonceSize]byte
 
 // Load decodes a 64-byte hex string into a Key. A hex key is suitable for
 // representation in a configuration file. You can generate one by running
@@ -54,10 +60,10 @@ func Load(hexkey string) (Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(keyBytes) != 32 {
+	if len(keyBytes) != KeySize {
 		return nil, fmt.Errorf("nacl: incorrect key length: %d", len(keyBytes))
 	}
-	key := new([32]byte)
+	key := new([KeySize]byte)
 	copy(key[:], keyBytes)
 	return key, nil
 }
@@ -65,7 +71,7 @@ func Load(hexkey string) (Key, error) {
 // NewKey returns a new Key with cryptographically random data. NewKey panics if
 // we could not read the correct amount of random data into key.
 func NewKey() Key {
-	key := new([32]byte)
+	key := new([KeySize]byte)
 	randombytes.MustRead(key[:])
 	return key
 }
@@ -73,7 +79,7 @@ func NewKey() Key {
 // NewNonce returns a new Nonce with cryptographically random data. It panics if
 // we could not read the correct amount of random data into nonce.
 func NewNonce() Nonce {
-	nonce := new([24]byte)
+	nonce := new([NonceSize]byte)
 	randombytes.MustRead(nonce[:])
 	return nonce
 }
@@ -97,7 +103,7 @@ func Verify16(a, b *[16]byte) bool {
 
 // Verify32 returns true if and only if a and b have equal contents, without
 // leaking timing information.
-func Verify32(a, b *[32]byte) bool {
+func Verify32(a, b *[KeySize]byte) bool {
 	if a == nil || b == nil {
 		panic("nacl: nil input")
 	}
