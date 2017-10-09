@@ -1,5 +1,8 @@
 SHELL = /bin/bash -o pipefail
 
+BAZEL_VERSION := 0.6.1
+BAZEL_DEB := bazel_$(BAZEL_VERSION)_amd64.deb
+
 BENCHSTAT := $(GOPATH)/bin/benchstat
 BUMP_VERSION := $(GOPATH)/bin/bump_version
 GODOCDOC := $(GOPATH)/bin/godocdoc
@@ -17,6 +20,11 @@ check: $(MEGACHECK)
 
 race-test: check vet
 	bazel test --test_output=errors --features=race //...
+
+install-travis:
+	wget "https://storage.googleapis.com/bazel-apt/pool/jdk1.8/b/bazel/$(BAZEL_DEB)"
+	sudo dpkg --force-all -i $(BAZEL_DEB)
+	sudo apt-get install moreutils -y
 
 ci:
 	bazel --batch --host_jvm_args=-Dbazel.DigestFunction=SHA1 test \
