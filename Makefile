@@ -25,6 +25,8 @@ ci:
 		--remote_rest_cache=https://remote.rest.stackmachine.com/cache \
 		--test_output=errors \
 		--strategy=Javac=remote \
+		--noshow_progress \
+		--noshow_loading_progress \
 		--features=race //... 2>&1 | ts '[%Y-%m-%d %H:%M:%.S]'
 
 vet:
