@@ -22,7 +22,6 @@ ci:
 	bazel --batch --host_jvm_args=-Dbazel.DigestFunction=SHA1 test \
 		--experimental_repository_cache="$$HOME/.bzrepos" \
 		--spawn_strategy=remote \
-		--remote_rest_cache=https://remote.rest.stackmachine.com/cache \
 		--test_output=errors \
 		--strategy=Javac=remote \
 		--noshow_progress \
