@@ -75,7 +75,9 @@ func Sign(message []byte, privateKey PrivateKey) []byte {
 	return response
 }
 
-// Verify uses key to report whether signature is a valid siganture of message.
+// Verify uses key to report whether signature is a valid signature of message.
+// The first SignatureSize bytes of signature should be the signature; the
+// remaining bytes are the message to verify.
 func (key PublicKey) Verify(signature []byte) bool {
 	if len(signature) < SignatureSize || signature[63]&224 != 0 {
 		return false
