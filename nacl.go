@@ -68,6 +68,25 @@ func Load(hexkey string) (Key, error) {
 	return key, nil
 }
 
+// Load decodes a 128-byte hex string into a Key. A hex key is suitable for
+// representation in a configuration file. You can generate one by running
+// nacl/sign.GenerateKey(nil).
+func Load64(hexkey string) (*[64]byte, error) {
+	if len(hexkey) != 128 {
+		return nil, fmt.Errorf("nacl: incorrect hex key length: %d, should be 64", len(hexkey))
+	}
+	keyBytes, err := hex.DecodeString(hexkey)
+	if err != nil {
+		return nil, err
+	}
+	if len(keyBytes) != 64 {
+		return nil, fmt.Errorf("nacl: incorrect key length: %d", len(keyBytes))
+	}
+	key := new([64]byte)
+	copy(key[:], keyBytes)
+	return key, nil
+}
+
 // NewKey returns a new Key with cryptographically random data. NewKey panics if
 // we could not read the correct amount of random data into key.
 func NewKey() Key {
