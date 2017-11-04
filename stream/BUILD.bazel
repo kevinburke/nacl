@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = ["stream.go"],
+    importpath = "github.com/kevinburke/nacl/stream",
     visibility = ["//visibility:public"],
     deps = [
         "//:go_default_library",
@@ -15,6 +16,7 @@ go_test(
     name = "go_default_test",
     timeout = "short",
     srcs = ["stream_test.go"],
+    importpath = "github.com/kevinburke/nacl/stream",
     library = ":go_default_library",
     deps = [
         "//:go_default_library",

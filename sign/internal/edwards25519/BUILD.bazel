@@ -6,5 +6,6 @@ go_library(
         "const.go",
         "edwards25519.go",
     ],
+    importpath = "github.com/kevinburke/nacl/sign/internal/edwards25519",
     visibility = ["//sign:__subpackages__"],
 )

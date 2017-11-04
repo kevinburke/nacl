@@ -1,5 +1,8 @@
 SHELL = /bin/bash -o pipefail
 
+BAZEL_VERSION := 0.7.0
+BAZEL_DEB := bazel_$(BAZEL_VERSION)_amd64.deb
+
 BENCHSTAT := $(GOPATH)/bin/benchstat
 BUMP_VERSION := $(GOPATH)/bin/bump_version
 GODOCDOC := $(GOPATH)/bin/godocdoc
@@ -11,6 +14,11 @@ test: vet
 
 $(MEGACHECK):
 	go get honnef.co/go/tools/cmd/megacheck
+
+install-travis:
+	wget "https://storage.googleapis.com/bazel-apt/pool/jdk1.8/b/bazel/$(BAZEL_DEB)"
+	sudo dpkg --force-all -i $(BAZEL_DEB)
+	sudo apt-get install moreutils -y
 
 check: $(MEGACHECK)
 	go list ./... | grep -v vendor | xargs $(MEGACHECK) --ignore='github.com/kevinburke/nacl/*/*.go:S1002'
