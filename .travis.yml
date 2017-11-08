@@ -12,10 +12,14 @@ before_script:
 
 script:
   - make ci
+  - ls -al
+  - ls -al bazel-out/*
+  - find bazel-out/ -type d
   - ls -al bazel-out/host/bin/external/go_stdlib_darwin_amd64_cgo_race || true
+  - du -sh $HOME/.cache/bazel/*
   - make clean-cache
+  - du -sh $HOME/.cache/bazel/*
 
 cache:
   directories:
     - $HOME/.bzrepos
-    - $HOME/.cache/bazel
