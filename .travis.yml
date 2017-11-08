@@ -12,7 +12,9 @@ before_script:
 
 script:
   - make ci
+  - make clean-cache
 
 cache:
   directories:
     - $HOME/.bzrepos
+    - $HOME/.cache/bazel
