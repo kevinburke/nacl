@@ -12,6 +12,7 @@ before_script:
 
 script:
   - make ci
+  - ls -al bazel-out/host/bin/external/go_stdlib_darwin_amd64_cgo_race || true
   - make clean-cache
 
 cache:
