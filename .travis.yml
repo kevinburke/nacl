@@ -12,7 +12,6 @@ before_script:
 
 script:
   - make ci
-  - ls -al bazel-out/host/bin/external/go_stdlib_linux_amd64_cgo_race || true
   - du -sh $HOME/.cache/bazel/_bazel_travis/*
   - make clean-cache
   - du -sh $HOME/.cache/bazel/_bazel_travis/*

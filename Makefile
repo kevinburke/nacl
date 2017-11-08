@@ -37,7 +37,7 @@ ci:
 
 clean-cache:
 	cd $$(readlink bazel-out)/host/bin/external && pwd && sudo rm -rf go_stdlib_linux_amd64_cgo_race go_stdlib_linux_amd64_cgo io_bazel_rules_go/go/tools/gazelle
-	cd $$(readlink bazel-nacl)/external && pwd && sudo rm -rf go_sdk
+	cd $$(readlink bazel-nacl) && pwd && sudo rm -rf ../../external/go_sdk
 
 vet:
 	go list ./... | grep -v vendor | xargs go vet
