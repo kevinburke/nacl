@@ -36,7 +36,7 @@ ci:
 		--features=race //... 2>&1 | ts '[%Y-%m-%d %H:%M:%.S]'
 
 clean-cache:
-	rm -rf bazel-out/host/bin/external/go_stdlib_darwin_amd64_cgo_race bazel-out/host/bin/external/go_stdlib_darwin_amd64_cgo bazel-out/host/bin/external/io_bazel_rules_go/go/tools/gazelle
+	cd $$(readlink bazel-out)/host/bin/external && pwd && sudo rm -rf go_stdlib_linux_amd64_cgo_race go_stdlib_linux_amd64_cgo io_bazel_rules_go/go/tools/gazelle
 
 vet:
 	go list ./... | grep -v vendor | xargs go vet
