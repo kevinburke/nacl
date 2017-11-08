@@ -36,9 +36,7 @@ ci:
 		--features=race //... 2>&1 | ts '[%Y-%m-%d %H:%M:%.S]'
 
 clean-cache:
-	find -L / -samefile bazel-out/host/bin/external/go_stdlib_linux_amd64_cgo_race -delete
-	find -L / -samefile bazel-out/host/bin/external/go_stdlib_linux_amd64_cgo -delete
-	find -L / -samefile bazel-out/host/bin/external/io_bazel_rules_go/go/tools/gazelle -delete
+	cd bazel-out/host/bin/external && rm -rf go_stdlib_linux_amd64_cgo_race go_stdlib_linux_amd64_cgo io_bazel_rules_go/go/tools/gazelle
 
 vet:
 	go list ./... | grep -v vendor | xargs go vet
