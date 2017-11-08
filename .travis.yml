@@ -15,9 +15,9 @@ script:
   - ls -al bazel-out/host/bin/external/go_stdlib_linux_amd64_cgo_race || true
   - du -sh $HOME/.cache/bazel/_bazel_travis/*
   - make clean-cache
-  - du -d 3 -h $HOME/.cache/bazel/_bazel_travis/10212575102b38e278b4bbd4cd4fa80b/*
-  - du -d 3 -h $HOME/.cache/bazel/_bazel_travis/install/*
+  - du -sh $HOME/.cache/bazel/_bazel_travis/*
 
 cache:
   directories:
     - $HOME/.bzrepos
+    - $HOME/.cache/bazel
