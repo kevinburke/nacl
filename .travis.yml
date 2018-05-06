@@ -2,17 +2,19 @@ go_import_path: github.com/kevinburke/nacl
 
 language: go
 
+go:
+  - 1.10.x
+  - master
+
 os: linux
 dist: trusty
 
-sudo: required
-
 before_script:
-     - make install-travis
+  - go get -u -t ./...
 
 script:
-  - make ci
+  - make race-test
 
 cache:
   directories:
-    - $HOME/.bzrepos
+    - $GOPATH/pkg

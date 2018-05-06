@@ -49,7 +49,7 @@ func Test1(t *testing.T) {
 
 func Test2(t *testing.T) {
 	if !Verify(&sum1, msg1, key1) {
-		t.Errorf("Verify(%q, %q, %q): got false, want true", &sum1, msg1, key1)
+		t.Errorf("Verify(%q, %q, %q): got false, want true", sum1, msg1, *key1)
 	}
 }
 
@@ -70,16 +70,16 @@ func Test7(t *testing.T) {
 		randombytes.MustRead(msg[:clen])
 		sum := Sum(msg[:clen], key)
 		if !Verify(sum, msg[:clen], key) {
-			t.Errorf("Verify(%q, %q, %q): got false, want true", &sum, msg, key)
+			t.Errorf("Verify(%q, %q, %q): got false, want true", *sum, msg, *key)
 		}
 		if clen > 0 {
 			msg[r.Intn(clen)] += byte(1 + r.Intn(255))
 			if Verify(sum, msg[:clen], key) {
-				t.Errorf("Verify(%q, %q, %q): got true, want false", &sum, msg, key)
+				t.Errorf("Verify(%q, %q, %q): got true, want false", *sum, msg, *key)
 			}
 			sum[r.Intn(16)] += byte(1 + r.Intn(255))
 			if Verify(sum, msg[:clen], key) {
-				t.Errorf("Verify(%q, %q, %q): got true, want false", &sum, msg, key)
+				t.Errorf("Verify(%q, %q, %q): got true, want false", *sum, msg, *key)
 			}
 		}
 	}
