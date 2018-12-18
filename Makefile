@@ -31,7 +31,7 @@ $(BENCHSTAT):
 	go get golang.org/x/perf/cmd/benchstat
 
 bench: $(BENCHSTAT)
-	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && $(BENCHSTAT) "$$tmp"
+	go list ./... | grep -v vendor | xargs go test -count=3 -benchtime=2s -bench=. -run='^$$' | $(BENCHSTAT) /dev/stdin
 
 $(BUMP_VERSION):
 	go get github.com/kevinburke/bump_version

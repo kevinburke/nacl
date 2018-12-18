@@ -48,7 +48,6 @@ func TestXOR(t *testing.T) {
 var (
 	keyArray [32]byte
 	key      = &keyArray
-	nonce    nacl.Nonce
 	msg      = make([]byte, 1<<10)
 )
 
@@ -56,6 +55,7 @@ var pkgOut []byte
 
 func BenchmarkXOR1K(b *testing.B) {
 	b.StopTimer()
+	nonce := nacl.NewNonce()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		pkgOut = XOR(msg[:1024], nonce, key)
