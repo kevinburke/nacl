@@ -21,6 +21,7 @@ import (
 	"errors"
 
 	"github.com/kevinburke/nacl"
+	"github.com/kevinburke/nacl/internal/subtle"
 	"github.com/kevinburke/nacl/onetimeauth"
 	"golang.org/x/crypto/salsa20/salsa"
 )
@@ -68,6 +69,9 @@ func Seal(out, message []byte, nonce nacl.Nonce, key nacl.Key) []byte {
 	copy(poly1305Key[:], firstBlock[:])
 
 	ret, out := sliceForAppend(out, len(message)+onetimeauth.Size)
+	if subtle.AnyOverlap(out, message) {
+		panic("nacl: invalid buffer overlap")
+	}
 
 	// We XOR up to 32 bytes of message with the keystream generated from
 	// the first block.
@@ -116,7 +120,7 @@ func EasyOpen(box []byte, key nacl.Key) ([]byte, error) {
 // Open authenticates and decrypts a box produced by Seal and appends the
 // message to out, which must not overlap box. The output will be Overhead
 // bytes smaller than box.
-func Open(out []byte, box []byte, nonce nacl.Nonce, key nacl.Key) ([]byte, bool) {
+func Open(out, box []byte, nonce nacl.Nonce, key nacl.Key) ([]byte, bool) {
 	if len(box) < Overhead {
 		return nil, false
 	}
