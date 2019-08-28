@@ -85,8 +85,9 @@ func (key PublicKey) Verify(signature []byte) bool {
 	return Verify(signature, key)
 }
 
-// Verify reports whether sig is a valid signature of message by publicKey. It
-// will panic if len(publicKey) is not PublicKeySize.
+// Verify reports whether sig is a valid signature of message by publicKey. The
+// first SignatureSize bytes of sig are the signature and the remainder is the
+// message. Verify will panic if len(publicKey) is not PublicKeySize.
 func Verify(sig []byte, publicKey PublicKey) bool {
 	if l := len(publicKey); l != PublicKeySize {
 		panic("sign: bad public key length: " + strconv.Itoa(l))
