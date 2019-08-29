@@ -45,6 +45,19 @@ func TestUnmarshalMarshal(t *testing.T) {
 	}
 }
 
+func TestRoundtrip(t *testing.T) {
+	_, priv, err := Keypair(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pub := priv.Public().(PublicKey)
+	msg := Sign([]byte(`This is a test message.`), priv)
+	ok := Verify(msg, pub)
+	if !ok {
+		t.Errorf("expected to Verify message with public key, could not")
+	}
+}
+
 func TestSignVerify(t *testing.T) {
 	var zero zeroReader
 	public, private, _ := Keypair(zero)
