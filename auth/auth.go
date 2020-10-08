@@ -39,8 +39,8 @@ func Sum(m []byte, key nacl.Key) *[Size]byte {
 	mac := hmac.New(sha512.New, (*key)[:])
 	mac.Write(m)
 	sum := mac.Sum(nil) // first 256 bits of 512 bit sum
-	out := new([32]byte)
-	copy(out[:], sum[:32])
+	out := new([Size]byte)
+	copy(out[:], sum[:Size])
 	return out
 }
 
