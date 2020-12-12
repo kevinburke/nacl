@@ -41,6 +41,7 @@ func Base(secretkey *[Size]byte) *[Size]byte {
 // group points and all values are in little-endian form.
 func Mult(in, base *[Size]byte) *[Size]byte {
 	key := new([Size]byte)
+	//lint:ignore SA1019 see https://github.com/golang/go/issues/43148
 	curve25519.ScalarMult(key, in, base)
 	return key
 }
