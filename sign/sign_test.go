@@ -15,7 +15,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kevinburke/nacl/sign/internal/edwards25519"
+	"filippo.io/edwards25519"
 )
 
 type zeroReader struct{}
@@ -30,18 +30,14 @@ func (zeroReader) Read(buf []byte) (int, error) {
 func TestUnmarshalMarshal(t *testing.T) {
 	pub, _, _ := Keypair(rand.Reader)
 
-	var A edwards25519.ExtendedGroupElement
-	var pubBytes [32]byte
-	copy(pubBytes[:], pub)
-	if !A.FromBytes(&pubBytes) {
-		t.Fatalf("ExtendedGroupElement.FromBytes failed")
+	var A edwards25519.Point
+	if _, err := A.SetBytes(pub); err != nil {
+		t.Fatalf("Point.SetBytes failed: %v", err)
 	}
+	pub2 := A.Bytes()
 
-	var pub2 [32]byte
-	A.ToBytes(&pub2)
-
-	if pubBytes != pub2 {
-		t.Errorf("FromBytes(%v)->ToBytes does not round-trip, got %x\n", pubBytes, pub2)
+	if !bytes.Equal(pub, pub2) {
+		t.Errorf("FromBytes(%v)->ToBytes does not round-trip, got %x\n", pub, pub2)
 	}
 }
 
