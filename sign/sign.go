@@ -16,7 +16,7 @@ import (
 	"io"
 	"strconv"
 
-	"golang.org/x/crypto/ed25519"
+	"crypto/ed25519"
 )
 
 const (

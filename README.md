@@ -76,7 +76,7 @@ from SUPERCOP, *not* the current implementation in NaCL. The difference is that
 the entire 64-byte signature is prepended to the message; in the current version
 of NaCL, separate bits are prepended and appended to the message.
 
-- Compared with `golang.org/x/crypto/ed25519`, this library's Sign
+- Compared with `crypto/ed25519`, this library's Sign
 implementation returns the message along with the signature, and Verify
 expects the first 64 bytes of the message to be the signature. This simplifies
 the API and matches the behavior of the ref10 implementation and other NaCL
