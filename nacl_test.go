@@ -39,3 +39,12 @@ func TestSecretKey(t *testing.T) {
 		t.Errorf("could not roundtrip decoded key: %s", h)
 	}
 }
+
+var keySink Key
+
+func BenchmarkNewKey(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		keySink = NewKey()
+	}
+}
