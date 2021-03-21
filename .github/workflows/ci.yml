@@ -17,6 +17,7 @@ jobs:
          path: './src/github.com/kevinburke/nacl'
     # staticcheck needs this for GOPATH
     - run: echo "GOPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+    - run: echo "GO111MODULE=off" >> $GITHUB_ENV
     - run: echo "PATH=$GITHUB_WORKSPACE/bin:$PATH" >> $GITHUB_ENV
     - name: Download dependencies
       run: go get -t -v ./...
