@@ -7,19 +7,19 @@ STATICCHECK := $(GOPATH)/bin/staticcheck
 
 test: vet
 	@# this target should always be listed first so "make" runs the tests.
-	go test ./...
+	go test -trimpath ./...
 
 $(STATICCHECK):
-	go get honnef.co/go/tools/cmd/staticcheck
+	GO111MODULE=on go install honnef.co/go/tools/cmd/staticcheck@latest
 
 check: $(STATICCHECK)
-	go list ./... | grep -v vendor | xargs $(STATICCHECK)
+	$(STATICCHECK) ./...
 
-race-test: check vet
-	go test -race ./...
+race-test:
+	go test -trimpath -race ./...
 
 vet:
-	go list ./... | grep -v vendor | xargs go vet
+	go vet -trimpath ./...
 
 $(GODOCDOC):
 	go get github.com/kevinburke/godocdoc
@@ -31,7 +31,7 @@ $(BENCHSTAT):
 	go get golang.org/x/perf/cmd/benchstat
 
 bench: $(BENCHSTAT)
-	go list ./... | grep -v vendor | xargs go test -count=3 -benchtime=2s -bench=. -run='^$$' | $(BENCHSTAT) /dev/stdin
+	go test -trimpath -count=3 -benchtime=2s -bench=. -run='^$$' ./... | $(BENCHSTAT) /dev/stdin
 
 $(BUMP_VERSION):
 	go get github.com/kevinburke/bump_version
