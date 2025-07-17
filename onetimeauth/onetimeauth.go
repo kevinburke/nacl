@@ -20,6 +20,7 @@ package onetimeauth
 
 import (
 	"github.com/kevinburke/nacl"
+	//lint:ignore SA1019 Poly1305 usage is safe for our specific cryptographic building block use case
 	"golang.org/x/crypto/poly1305"
 )
 
