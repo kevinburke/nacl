@@ -27,7 +27,7 @@ import (
 )
 
 // The software version.
-const Version = "0.8"
+const Version = "0.8.0"
 
 // Size of a public or private key in bytes.
 const KeySize = 32

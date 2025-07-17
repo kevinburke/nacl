@@ -37,4 +37,4 @@ $(BUMP_VERSION):
 	go get github.com/kevinburke/bump_version
 
 release: check race-test | $(BUMP_VERSION)
-	$(BUMP_VERSION) minor nacl.go
+	$(BUMP_VERSION) --tag-prefix=v minor nacl.go
