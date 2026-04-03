@@ -65,7 +65,7 @@ func Test7(t *testing.T) {
 	}
 	key := new([32]byte)
 	msg := make([]byte, 10000)
-	for clen := 0; clen < 10000; clen++ {
+	for clen := range 10000 {
 		randombytes.MustRead(key[:])
 		randombytes.MustRead(msg[:clen])
 		sum := Sum(msg[:clen], key)

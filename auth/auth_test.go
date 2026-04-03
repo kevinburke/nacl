@@ -136,7 +136,7 @@ func TestStress(t *testing.T) {
 	var key [32]byte
 	c := make([]byte, 10000)
 	// copied from tests/auth5.c in nacl
-	for i := 0; i < 10000; i++ {
+	for i := range 10000 {
 		fill(t, key[:])
 		fill(t, c[:i])
 		a := Sum(c[:i], &key)

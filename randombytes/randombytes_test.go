@@ -7,7 +7,7 @@ import (
 
 func TestRead(t *testing.T) {
 	var p [32]byte
-	for j := 0; j < 100; j++ {
+	for range 100 {
 		n, err := Read(p[:])
 		if err != nil {
 			t.Fatal(err)
@@ -16,7 +16,7 @@ func TestRead(t *testing.T) {
 			t.Errorf("Read: expected to read 32 bytes, got %d", n)
 		}
 		v := uint64(0)
-		for i := 0; i < 32; i++ {
+		for i := range 32 {
 			v += uint64(p[i])
 			p[i] = 0
 		}
@@ -28,10 +28,10 @@ func TestRead(t *testing.T) {
 
 func TestMustRead(t *testing.T) {
 	var p [32]byte
-	for j := 0; j < 100; j++ {
+	for range 100 {
 		MustRead(p[:])
 		v := uint64(0)
-		for i := 0; i < 32; i++ {
+		for i := range 32 {
 			v += uint64(p[i])
 			p[i] = 0
 		}
