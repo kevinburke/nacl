@@ -51,6 +51,15 @@ go get github.com/kevinburke/nacl
 
 Or you can Git clone the code directly to $GOPATH/src/github.com/kevinburke/nacl.
 
+#### Using `cmd`s
+
+When used as scripts in modules (for e.g. automation) the shipped `cmd`s can
+be called e.g. like this:
+
+```
+go run $(go list -m -f '{{.Dir}}' github.com/kevinburke/nacl)/cmd/nacl-generate-box-key/main.go
+```
+
 ### Who am I?
 
 While you probably shouldn't trust random security code from the Internet,
