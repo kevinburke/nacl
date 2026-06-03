@@ -12,7 +12,7 @@ jobs:
       uses: actions/setup-go@v6
       with:
         go-version: ${{ matrix.go-version }}
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v6.0.2
       with:
          path: './src/github.com/kevinburke/nacl'
     # staticcheck needs this for GOPATH
